@@ -14,15 +14,15 @@ function calcSimilarity<DataType>(
     pointB: Point<DataType>
 ) {
     // dot product
-    const nonNormSimilarity: number = pointA.embedding
-        .map((x, i) => x * pointB.embedding[i])
-        .reduce((acc, cur) => acc + cur);
+    const nonNormSimilarity: number = pointA.embedding.reduce(
+        (acc, cur, i) => acc + cur * pointB.embedding[i]
+    );
 
     const aNorm = Math.sqrt(
-        pointA.embedding.map(x => x ** 2).reduce((acc, cur) => acc + cur)
+        pointA.embedding.reduce((acc, cur) => acc + cur ** 2)
     );
     const bNorm = Math.sqrt(
-        pointB.embedding.map(x => x ** 2).reduce((acc, cur) => acc + cur)
+        pointB.embedding.reduce((acc, cur) => acc + cur ** 2)
     );
 
     const similarity = nonNormSimilarity / (aNorm * bNorm);
