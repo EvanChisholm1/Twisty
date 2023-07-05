@@ -9,6 +9,8 @@ interface Point<DataType> {
 const file: string = fs.readFileSync("./arxiv-titles.json", "utf-8")!;
 const embeddings: Point<string>[] = JSON.parse(file);
 
+// embeddings.forEach((e, i) => console.log(i, e.data));
+
 function calcSimilarity<DataType>(
     pointA: Point<DataType>,
     pointB: Point<DataType>
@@ -34,22 +36,29 @@ function knn<DataType>(
     points: Point<DataType>[],
     k: number
 ) {
-    const ks: Point<DataType>[] = [];
-    let mostSimilar: { point: Point<DataType> | null; similarity: number } = {
-        point: null,
-        similarity: 0,
-    };
+    const mostSimilar: Array<{
+        point: Point<DataType> | null;
+        similarity: number;
+    }> = new Array(k).fill({ point: null, similarity: 0 });
 
     for (const point of points) {
         const sim = calcSimilarity(target, point);
-        if (sim > mostSimilar.similarity) {
-            mostSimilar.point = point;
-            mostSimilar.similarity = sim;
+        // not the fastest if k is quite large, will likely switch to binary search at some point
+        // time complextiy with binary search would become O(n * log(k)) instead of O(nk)
+        for (const [i, previousPoint] of mostSimilar.entries()) {
+            if (!(sim > previousPoint.similarity)) continue;
+
+            mostSimilar.splice(i, 0, { point, similarity: sim });
+            mostSimilar.pop();
+            break;
         }
     }
 
-    console.log(mostSimilar.point?.data);
     return mostSimilar;
 }
 
-knn(embeddings[0], embeddings.slice(1), 1);
+const mostSimilar = knn(embeddings[690], embeddings.slice(1), 10);
+
+for (const point of mostSimilar) {
+    console.log(point.point?.data);
+}
