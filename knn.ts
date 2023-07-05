@@ -1,17 +1,15 @@
-import fs from "fs";
-
-interface Point<DataType> {
+export interface Point<DataType> {
     embedding: number[];
     size: number;
     data: DataType;
 }
 
-const file: string = fs.readFileSync("./arxiv-titles.json", "utf-8")!;
-const embeddings: Point<string>[] = JSON.parse(file);
+// const file: string = fs.readFileSync("./arxiv-titles.json", "utf-8")!;
+// const embeddings: Point<string>[] = JSON.parse(file);
 
 // embeddings.forEach((e, i) => console.log(i, e.data));
 
-function calcSimilarity<DataType>(
+export function calcSimilarity<DataType>(
     pointA: Point<DataType>,
     pointB: Point<DataType>
 ) {
@@ -31,7 +29,7 @@ function calcSimilarity<DataType>(
     return similarity;
 }
 
-function knn<DataType>(
+export function knn<DataType>(
     target: Point<DataType>,
     points: Point<DataType>[],
     k: number
@@ -57,8 +55,8 @@ function knn<DataType>(
     return mostSimilar;
 }
 
-const mostSimilar = knn(embeddings[690], embeddings.slice(1), 10);
+// const mostSimilar = knn(embeddings[690], embeddings.slice(1), 10);
 
-for (const point of mostSimilar) {
-    console.log(point.point?.data);
-}
+// for (const point of mostSimilar) {
+//     console.log(point.point?.data);
+// }

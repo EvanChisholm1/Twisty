@@ -6,7 +6,8 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "run": "ts-node index.ts",
-        "knn": "ts-node knn.ts"
+        "knn": "ts-node knn.ts",
+        "benchmark": "ts-node benchmark.ts"
     },
     "keywords": [],
     "author": "",
