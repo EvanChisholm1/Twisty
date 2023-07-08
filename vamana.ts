@@ -8,7 +8,26 @@ type Graph<DataType> = Array<{
 function constructGraph<DataType>(
     points: Array<Point<DataType>>
 ): Graph<DataType> {
-    return [];
+    const graph: Graph<DataType> = [];
+
+    for (const point of points) {
+        const edges: number[] = [];
+
+        for (let i = 0; i < 5; i++) {
+            const edge = Math.round(Math.random() * (points.length - 1));
+            edges.push(edge);
+        }
+
+        graph.push({
+            point,
+            edges,
+        });
+    }
+
+    // TODO: optimize graph with both long and short connections
+    // TODO: make sure graph is fully connected
+
+    return graph;
 }
 
 function search<DataType>(
