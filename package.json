@@ -7,7 +7,8 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "run": "ts-node index.ts",
         "knn": "ts-node knn.ts",
-        "benchmark": "ts-node benchmark.ts"
+        "benchmark": "ts-node benchmark.ts",
+        "vamana": "ts-node vamana.ts"
     },
     "keywords": [],
     "author": "",

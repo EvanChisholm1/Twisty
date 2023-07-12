@@ -1,4 +1,5 @@
 import { Point, calcSimilarity } from "./knn";
+import { readFileSync } from "fs";
 
 type Graph<DataType> = Array<{
     point: Point<DataType>;
@@ -30,10 +31,12 @@ function constructGraph<DataType>(
     return graph;
 }
 
+// need to fix bug where most similar becomes the same pont repeated
 function search<DataType>(
     target: Point<DataType>,
-    graph: Graph<DataType>
-): Array<Point<DataType>> {
+    graph: Graph<DataType>,
+    k: number
+): Array<{ point: Point<DataType>; similarity: number }> {
     // visited map, keeps track of which nodes in the graph have and have not been vistited
     const visited: {
         [key: number]: boolean;
@@ -58,11 +61,29 @@ function search<DataType>(
         },
     ];
 
+    let mostSimilar: Array<{
+        point: Point<DataType>;
+        similarity: number;
+    }> = new Array(k).fill({ point: entryPoint, similarity: entrySimilarity });
+
     // greedy bfs
     // TODO: keep track of most similar points
     // TODO: create stop condition
     while (q.length !== 0) {
         const current = q.shift()!;
+
+        for (const [i, previousPoint] of mostSimilar.entries()) {
+            if (!(current.similarity > previousPoint.similarity)) continue;
+            if (previousPoint.point.data === current.point.data) break;
+
+            mostSimilar.splice(i, 0, {
+                point: current.point,
+                similarity: current.similarity,
+            });
+            mostSimilar.pop();
+            break;
+        }
+
         for (const nextIndex of graph[current.index].edges) {
             // if this node has been visited skip
             if (visited[nextIndex]) continue;
@@ -70,6 +91,11 @@ function search<DataType>(
             visited[nextIndex] = true;
 
             const sim = calcSimilarity(target, graph[nextIndex].point);
+
+            // if the next point is less similar than the current point then don't search that direction
+            // this is the part that makes the algorithim greedy, not sure if it's the best way to do it especially with the current graph
+            // will have to read the paper on DiskANN and how they optimize the graph
+            if (sim < current.similarity) continue;
 
             // find spot in q where it belongs so the q is sorted by similarity
             let isInserted = false;
@@ -94,5 +120,19 @@ function search<DataType>(
         }
     }
 
-    return [];
+    console.log(mostSimilar);
+
+    return mostSimilar;
 }
+
+const file: string = readFileSync("./arxiv-titles.json", "utf-8")!;
+const embeddings: Point<string>[] = JSON.parse(file);
+
+const g = constructGraph(embeddings.slice(1));
+console.log("starting point:", embeddings[0]);
+
+const start = Date.now();
+search(embeddings[0], g, 10);
+const end = Date.now();
+
+console.log("time:", end - start);
