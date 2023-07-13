@@ -6,7 +6,7 @@ type Graph<DataType> = Array<{
     edges: number[];
 }>;
 
-function constructGraph<DataType>(
+export function constructGraph<DataType>(
     points: Array<Point<DataType>>
 ): Graph<DataType> {
     const graph: Graph<DataType> = [];
@@ -32,7 +32,7 @@ function constructGraph<DataType>(
 }
 
 // need to fix bug where most similar becomes the same pont repeated
-function search<DataType>(
+export function search<DataType>(
     target: Point<DataType>,
     graph: Graph<DataType>,
     k: number
@@ -64,17 +64,17 @@ function search<DataType>(
     let mostSimilar: Array<{
         point: Point<DataType>;
         similarity: number;
-    }> = new Array(k).fill({ point: entryPoint, similarity: entrySimilarity });
+    }> = new Array(k).fill({ point: entryPoint, similarity: 0 });
 
     // greedy bfs
-    // TODO: keep track of most similar points
-    // TODO: create stop condition
+    let searched = 0;
     while (q.length !== 0) {
         const current = q.shift()!;
+        searched++;
 
         for (const [i, previousPoint] of mostSimilar.entries()) {
-            if (!(current.similarity > previousPoint.similarity)) continue;
             if (previousPoint.point.data === current.point.data) break;
+            if (!(current.similarity > previousPoint.similarity)) continue;
 
             mostSimilar.splice(i, 0, {
                 point: current.point,
@@ -92,10 +92,10 @@ function search<DataType>(
 
             const sim = calcSimilarity(target, graph[nextIndex].point);
 
-            // if the next point is less similar than the current point then don't search that direction
+            // if the next point is less similar than the least similar node in the list of most similar nodes then don't search that direction
             // this is the part that makes the algorithim greedy, not sure if it's the best way to do it especially with the current graph
             // will have to read the paper on DiskANN and how they optimize the graph
-            if (sim < current.similarity) continue;
+            if (sim < mostSimilar[mostSimilar.length - 1].similarity) continue;
 
             // find spot in q where it belongs so the q is sorted by similarity
             let isInserted = false;
@@ -120,19 +120,20 @@ function search<DataType>(
         }
     }
 
-    console.log(mostSimilar);
+    // console.log(mostSimilar);
+    // console.log("nodes searched:", searched);
 
     return mostSimilar;
 }
 
-const file: string = readFileSync("./arxiv-titles.json", "utf-8")!;
-const embeddings: Point<string>[] = JSON.parse(file);
+// const file: string = readFileSync("./arxiv-titles.json", "utf-8")!;
+// const embeddings: Point<string>[] = JSON.parse(file);
 
-const g = constructGraph(embeddings.slice(1));
-console.log("starting point:", embeddings[0]);
+// const g = constructGraph(embeddings.slice(1));
+// console.log("starting point:", embeddings[0]);
 
-const start = Date.now();
-search(embeddings[0], g, 10);
-const end = Date.now();
+// const start = Date.now();
+// search(embeddings[0], g, 10);
+// const end = Date.now();
 
-console.log("time:", end - start);
+// console.log("time:", end - start);
