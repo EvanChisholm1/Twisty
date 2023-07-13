@@ -6,8 +6,13 @@ Twisty is a vector database written from scratch in pure typescript. Currently i
 
 Here are some benchmarks of the various algorithms implemented running on my computer with an i7 7700 and 16gb of ram:
 
-| Algorithm | Average Time Over 5 Runs |
-| --------- | ------------------------ |
-| KNN       | 28.97                    |
+### Benchmark on Small Dataset of 1000 Arxiv Titles
+
+| Algorithm      | Average Time Over 5 Runs |
+| -------------- | ------------------------ |
+| KNN            | 2.4058                   |
+| DiskANN/Vamana | 0.822                    |
 
 Eventually I will have multiple algorithims, specifically Annoy, and HNSW, as well as comparisons to other popular libraries and projects. The goal is to become the fastest JavaScript/TypeScript based vector database.
+
+More benchmarks coming soon with recal metrics and larger datasets.
