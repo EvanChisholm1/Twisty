@@ -10,8 +10,15 @@ Here are some benchmarks of the various algorithms implemented running on my com
 
 | Algorithm      | Average Time Over 5 Runs |
 | -------------- | ------------------------ |
-| KNN            | 2.4058                   |
-| DiskANN/Vamana | 0.822                    |
+| KNN            | 2.4058ms                 |
+| DiskANN/Vamana | 0.822ms                  |
+
+### Benchmark on Dataset of 10k Arxiv Titles
+
+| Algorithm      | Average Time Over 5 Runs |
+| -------------- | ------------------------ |
+| KNN            | 24.35                    |
+| DiskANN/Vamana | 1.25                     |
 
 Eventually I will have multiple algorithims, specifically Annoy, and HNSW, as well as comparisons to other popular libraries and projects. The goal is to become the fastest JavaScript/TypeScript based vector database.
 
