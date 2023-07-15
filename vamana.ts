@@ -7,14 +7,15 @@ type Graph<DataType> = Array<{
 }>;
 
 export function constructGraph<DataType>(
-    points: Array<Point<DataType>>
+    points: Array<Point<DataType>>,
+    numberOfEdges: number = 5
 ): Graph<DataType> {
     const graph: Graph<DataType> = [];
 
     for (const point of points) {
         const edges: number[] = [];
 
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < numberOfEdges; i++) {
             const edge = Math.round(Math.random() * (points.length - 1));
             edges.push(edge);
         }
