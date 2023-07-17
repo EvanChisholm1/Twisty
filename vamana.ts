@@ -36,7 +36,8 @@ export function constructGraph<DataType>(
 export function search<DataType>(
     target: Point<DataType>,
     graph: Graph<DataType>,
-    k: number
+    k: number,
+    l: number = k
 ): Array<{ point: Point<DataType>; similarity: number }> {
     // visited map, keeps track of which nodes in the graph have and have not been vistited
     const visited: {
@@ -65,7 +66,7 @@ export function search<DataType>(
     let mostSimilar: Array<{
         point: Point<DataType>;
         similarity: number;
-    }> = new Array(k).fill({ point: entryPoint, similarity: 0 });
+    }> = new Array(l).fill({ point: entryPoint, similarity: 0 });
 
     // greedy bfs
     let searched = 0;
