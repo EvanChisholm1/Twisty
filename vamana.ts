@@ -6,6 +6,16 @@ type Graph<DataType> = Array<{
     edges: number[];
 }>;
 
+function robustPrune<DataType>(
+    point: Point<DataType>,
+    graph: Graph<DataType>,
+    candidateSet: Point<DataType>[],
+    distanceThreshold: number,
+    numberOfConnections: number
+): Point<DataType>[] {
+    return [];
+}
+
 export function constructGraph<DataType>(
     points: Array<Point<DataType>>,
     numberOfEdges: number = 5
