@@ -1,5 +1,4 @@
 import { Point, calcSimilarity } from "./knn";
-import { readFileSync } from "fs";
 
 type Graph<DataType> = Array<{
     point: Point<DataType>;
@@ -7,13 +6,39 @@ type Graph<DataType> = Array<{
 }>;
 
 function robustPrune<DataType>(
-    point: Point<DataType>,
+    point: { point: Point<DataType>; neighbors: number[] },
     graph: Graph<DataType>,
-    candidateSet: Point<DataType>[],
+    candidateSet: number[],
     distanceThreshold: number,
     numberOfConnections: number
-): Point<DataType>[] {
-    return [];
+): number[] {
+    const newConnections: number[] = [];
+    const allCandidates = [...point.neighbors, ...candidateSet].sort(
+        (a, b) =>
+            calcSimilarity(point.point, graph[a].point) -
+            calcSimilarity(point.point, graph[b].point)
+    );
+
+    while (allCandidates.length > 0) {
+        const next = allCandidates[0];
+        const nextPoint = graph[next];
+        newConnections.push(next);
+
+        if (newConnections.length === numberOfConnections) break;
+
+        for (let i = allCandidates.length - 1; i >= 0; i--) {
+            const candidate = graph[allCandidates[i]];
+            if (
+                distanceThreshold *
+                    (1 - calcSimilarity(nextPoint.point, candidate.point)) <=
+                1 - calcSimilarity(point.point, candidate.point)
+            ) {
+                allCandidates.splice(i, 1);
+            }
+        }
+    }
+
+    return newConnections;
 }
 
 export function constructGraph<DataType>(
