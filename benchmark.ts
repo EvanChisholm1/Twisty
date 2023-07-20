@@ -1,10 +1,11 @@
 import { readFileSync } from "fs";
 import { Point, knn } from "./knn";
 import { constructGraph, search } from "./vamana";
+import { searchRandom } from "./random";
 
 console.log("loading file...");
-// const file: string = readFileSync("./arxiv-titles.json", "utf-8")!;
-const file: string = readFileSync("./arxiv-titles-10k.json", "utf-8")!;
+const file: string = readFileSync("./arxiv-titles.json", "utf-8")!;
+// const file: string = readFileSync("./arxiv-titles-10k.json", "utf-8")!;
 const embeddings: Point<string>[] = JSON.parse(file);
 
 // let embeddings: Point<string>[] = [];
@@ -57,7 +58,7 @@ for (let i = 0; i < 1000; i++) {
     const embeddingIndex = Math.round(Math.random() * 999);
 
     // don't include construction of graph in time because in real world graph would be created once and used many times
-    const g = constructGraph(embeddings);
+    const g = constructGraph(embeddings, 10);
 
     const start = Date.now();
     const mostSimilar = search(embeddings[embeddingIndex], g, 10);
@@ -74,9 +75,39 @@ for (let i = 0; i < 1000; i++) {
 const diskANNAvgSimilarity =
     diskANNSimilarities.reduce((acc, cur) => acc + cur) / 1000;
 
-const diskANNTotalTimeMs = timesDiskANN.reduce((acc, cur) => acc + cur) / 1000;
-const diskANNAvgTimeMs = diskANNTotalTimeMs;
+const diskANNTotalTimeMs = timesDiskANN.reduce((acc, cur) => acc + cur);
+const diskANNAvgTimeMs = diskANNTotalTimeMs / 1000;
 
 console.log("DiskANN average time:", diskANNAvgTimeMs);
 console.log("DiskANN Total Time:", diskANNTotalTimeMs);
 console.log("DiskANN average similarity:", diskANNAvgSimilarity);
+
+// random benchmark
+const randomTimes: number[] = [];
+const randomAverageSimilarities: number[] = [];
+
+for (let i = 0; i < 1000; i++) {
+    const embeddingIndex = Math.round(Math.random() * 999);
+
+    const start = Date.now();
+    const mostSimilar = searchRandom(
+        embeddings[embeddingIndex],
+        embeddings,
+        10
+    );
+    const end = Date.now();
+
+    randomTimes.push(end - start);
+
+    const avgSimilarity =
+        mostSimilar.reduce((acc, cur) => acc + cur.similarity, 0) / 10;
+    randomAverageSimilarities.push(avgSimilarity);
+}
+
+const randomAverageSim =
+    randomAverageSimilarities.reduce((acc, cur) => acc + cur) / 1000;
+
+const randomAverageTime = randomTimes.reduce((acc, cur) => acc + cur) / 1000;
+
+console.log("Random Average Time:", randomAverageTime);
+console.log("Random Average Similarity:", randomAverageSim);
