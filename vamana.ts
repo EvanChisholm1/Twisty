@@ -1,4 +1,5 @@
 import { Point, calcSimilarity } from "./knn";
+import { readFileSync } from "fs";
 
 type Graph<DataType> = Array<{
     point: Point<DataType>;
@@ -6,14 +7,14 @@ type Graph<DataType> = Array<{
 }>;
 
 function robustPrune<DataType>(
-    point: { point: Point<DataType>; neighbors: number[] },
+    point: { point: Point<DataType>; edges: number[] },
     graph: Graph<DataType>,
     candidateSet: number[],
     distanceThreshold: number,
     numberOfConnections: number
 ): number[] {
     const newConnections: number[] = [];
-    const allCandidates = [...point.neighbors, ...candidateSet].sort(
+    const allCandidates = [...point.edges, ...candidateSet].sort(
         (a, b) =>
             calcSimilarity(point.point, graph[a].point) -
             calcSimilarity(point.point, graph[b].point)
@@ -63,6 +64,40 @@ export function constructGraph<DataType>(
 
     // TODO: optimize graph with both long and short connections
     // TODO: make sure graph is fully connected
+    const a = [1, 3];
+
+    for (let r = 0; r < 2; r++) {
+        for (let i = 0; i < graph.length; i++) {
+            const visited = search(
+                graph[i].point,
+                graph,
+                1,
+                numberOfEdges + 5
+            ).visited;
+
+            graph[i].edges = robustPrune(
+                graph[i],
+                graph,
+                [...Object.entries(visited).map(([key]) => parseInt(key))],
+                a[r],
+                numberOfEdges
+            );
+
+            for (let j = 0; j < graph[i].edges.length; j++) {
+                if (graph[j].edges.length + 1 > numberOfEdges) {
+                    graph[j].edges = robustPrune(
+                        graph[j],
+                        graph,
+                        [...graph[j].edges, i],
+                        a[r],
+                        numberOfEdges
+                    );
+                } else {
+                    graph[j].edges.push(i);
+                }
+            }
+        }
+    }
 
     return graph;
 }
@@ -73,7 +108,10 @@ export function search<DataType>(
     graph: Graph<DataType>,
     k: number,
     l: number = k
-): Array<{ point: Point<DataType>; similarity: number }> {
+): {
+    mostSimilar: Array<{ point: Point<DataType>; similarity: number }>;
+    visited: { [key: number]: boolean };
+} {
     // visited map, keeps track of which nodes in the graph have and have not been vistited
     const visited: {
         [key: number]: boolean;
@@ -160,7 +198,7 @@ export function search<DataType>(
     // console.log(mostSimilar);
     // console.log("nodes searched:", searched);
 
-    return mostSimilar;
+    return { mostSimilar, visited };
 }
 
 // const file: string = readFileSync("./arxiv-titles.json", "utf-8")!;
