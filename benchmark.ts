@@ -4,8 +4,8 @@ import { constructGraph, search } from "./vamana";
 import { searchRandom } from "./random";
 
 console.log("loading file...");
-const file: string = readFileSync("./arxiv-titles.json", "utf-8")!;
-// const file: string = readFileSync("./arxiv-titles-10k.json", "utf-8")!;
+// const file: string = readFileSync("./arxiv-titles.json", "utf-8")!;
+const file: string = readFileSync("./arxiv-titles-10k.json", "utf-8")!;
 const embeddings: Point<string>[] = JSON.parse(file);
 
 // let embeddings: Point<string>[] = [];
@@ -54,14 +54,15 @@ console.log("KNN average similarity", KNNAvgSimilartiy, "\n");
 const timesDiskANN: number[] = [];
 const diskANNSimilarities: number[] = [];
 
+const g = constructGraph(embeddings, 5);
+
 for (let i = 0; i < 1000; i++) {
     const embeddingIndex = Math.round(Math.random() * 999);
 
     // don't include construction of graph in time because in real world graph would be created once and used many times
-    const g = constructGraph(embeddings, 10);
 
     const start = Date.now();
-    const mostSimilar = search(embeddings[embeddingIndex], g, 10);
+    const { mostSimilar } = search(embeddings[embeddingIndex], g, 10);
     const end = Date.now();
     // console.log(end - start);
 
