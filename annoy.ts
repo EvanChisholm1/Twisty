@@ -1,5 +1,6 @@
 // friendship ended with diskANN, Annoy is my new best friend
 import { Point, calcSimilarity } from "./knn";
+import { readFileSync } from "fs";
 
 type AnnoyNode<DataType> =
     | {
@@ -15,13 +16,15 @@ interface AnnoyIndex<DataType> {
 }
 
 function splitVectors<DataType>(points: Point<DataType>[]) {
-    const v1 = points[Math.random() * (points.length - 1)];
-    const v2 = points[Math.random() * (points.length - 1)];
+    const v1 = points[Math.round(Math.random() * (points.length - 1))];
+    const v2 = points[Math.round(Math.random() * (points.length - 1))];
 
     // midpoint of v2 and v1
-    const midpoint = v1.embedding.map((a, i) => a + v2[i]).map(x => x / 2);
+    const midpoint = v1.embedding
+        .map((a, i) => a + v2.embedding[i])
+        .map(x => x / 2);
     // calculate norm of plane
-    let plane = v1.embedding.map((a, i) => a - v2[i]);
+    let plane = v1.embedding.map((a, i) => a - v2.embedding[i]);
     const planeNorm = Math.sqrt(plane.reduce((acc, cur) => acc + cur ** 2));
     plane = plane.map((x, i) => x / planeNorm);
 
@@ -47,7 +50,7 @@ function splitVectors<DataType>(points: Point<DataType>[]) {
     return { leftVectors, rightVectors, plane, midpoint };
 }
 
-function constructGraph<DataType>(
+function constructTree<DataType>(
     points: Point<DataType>[],
     k: number
 ): AnnoyNode<DataType> {
@@ -57,11 +60,11 @@ function constructGraph<DataType>(
         left:
             leftVectors.length <= k
                 ? leftVectors
-                : constructGraph(leftVectors, k),
+                : constructTree(leftVectors, k),
         right:
             rightVectors.length <= k
                 ? rightVectors
-                : constructGraph(rightVectors, k),
+                : constructTree(rightVectors, k),
         plane,
         midpoint,
     };

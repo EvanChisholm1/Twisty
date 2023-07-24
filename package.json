@@ -8,7 +8,8 @@
         "run": "ts-node index.ts",
         "knn": "ts-node knn.ts",
         "benchmark": "ts-node benchmark.ts",
-        "vamana": "ts-node vamana.ts"
+        "vamana": "ts-node vamana.ts",
+        "annoy": "ts-node annoy.ts"
     },
     "keywords": [],
     "author": "",
