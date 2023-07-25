@@ -71,3 +71,47 @@ function constructTree<DataType>(
 
     return currentNode;
 }
+
+function searchAnnoy<DataType>(
+    target: Point<DataType>,
+    tree: AnnoyNode<DataType>,
+    k: number = 5
+): Array<Point<DataType>> {
+    if (Array.isArray(tree)) return tree;
+    const translatedPoint = target.embedding.map(
+        (x, i) => x - tree.midpoint[i]
+    );
+    const sim = calcSimilarity(
+        {
+            embedding: translatedPoint,
+            data: null,
+            size: translatedPoint.length,
+        },
+        { embedding: tree.plane, data: null, size: translatedPoint.length }
+    );
+
+    const results = searchAnnoy(target, sim <= 0 ? tree.left : tree.right);
+    if (results.length >= k) return results;
+
+    return [
+        ...results,
+        ...searchAnnoy(target, sim <= 0 ? tree.right : tree.left),
+    ].slice(0, k);
+}
+
+const file: string = readFileSync("./arxiv-titles-10k.json", "utf-8")!;
+const embeddings: Point<string>[] = JSON.parse(file);
+
+const t = constructTree(embeddings, 5);
+
+const start = Date.now();
+const results = searchAnnoy(embeddings[0], t, 5);
+const end = Date.now();
+console.log(results);
+console.log("Time to search:", end - start);
+const avgSim =
+    results.reduce((acc, cur) => acc + calcSimilarity(embeddings[0], cur), 0) /
+    5;
+console.log(avgSim);
+
+// console.log(t);
