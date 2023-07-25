@@ -16,8 +16,8 @@ function robustPrune<DataType>(
     const newConnections: number[] = [];
     const allCandidates = [...point.edges, ...candidateSet].sort(
         (a, b) =>
-            calcSimilarity(point.point, graph[a].point) -
-            calcSimilarity(point.point, graph[b].point)
+            calcSimilarity(point.point, graph[b].point) -
+            calcSimilarity(point.point, graph[a].point)
     );
 
     while (allCandidates.length > 0) {
@@ -64,16 +64,16 @@ export function constructGraph<DataType>(
 
     // TODO: optimize graph with both long and short connections
     // TODO: make sure graph is fully connected
-    const a = [1, 3];
+    const a = [1, 1.4];
 
     for (let r = 0; r < 2; r++) {
         for (let i = 0; i < graph.length; i++) {
-            const visited = search(
+            const { visited } = search(
                 graph[i].point,
                 graph,
                 1,
-                numberOfEdges + 5
-            ).visited;
+                numberOfEdges + 10
+            );
 
             graph[i].edges = robustPrune(
                 graph[i],
@@ -198,7 +198,7 @@ export function search<DataType>(
     // console.log(mostSimilar);
     // console.log("nodes searched:", searched);
 
-    return { mostSimilar, visited };
+    return { mostSimilar: mostSimilar.slice(0, k), visited };
 }
 
 // const file: string = readFileSync("./arxiv-titles.json", "utf-8")!;
