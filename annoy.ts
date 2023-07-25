@@ -50,7 +50,7 @@ function splitVectors<DataType>(points: Point<DataType>[]) {
     return { leftVectors, rightVectors, plane, midpoint };
 }
 
-function constructTree<DataType>(
+export function constructTree<DataType>(
     points: Point<DataType>[],
     k: number
 ): AnnoyNode<DataType> {
@@ -72,7 +72,7 @@ function constructTree<DataType>(
     return currentNode;
 }
 
-function searchAnnoy<DataType>(
+export function searchAnnoy<DataType>(
     target: Point<DataType>,
     tree: AnnoyNode<DataType>,
     k: number = 5
