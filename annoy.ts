@@ -98,20 +98,3 @@ function searchAnnoy<DataType>(
         ...searchAnnoy(target, sim <= 0 ? tree.right : tree.left),
     ].slice(0, k);
 }
-
-const file: string = readFileSync("./arxiv-titles-10k.json", "utf-8")!;
-const embeddings: Point<string>[] = JSON.parse(file);
-
-const t = constructTree(embeddings, 5);
-
-const start = Date.now();
-const results = searchAnnoy(embeddings[0], t, 5);
-const end = Date.now();
-console.log(results);
-console.log("Time to search:", end - start);
-const avgSim =
-    results.reduce((acc, cur) => acc + calcSimilarity(embeddings[0], cur), 0) /
-    5;
-console.log(avgSim);
-
-// console.log(t);
