@@ -98,3 +98,46 @@ export function searchAnnoy<DataType>(
         ...searchAnnoy(target, sim <= 0 ? tree.right : tree.left),
     ].slice(0, k);
 }
+
+export function constructNTrees<DataType>(
+    points: Point<DataType>[],
+    k: number,
+    n: number
+) {
+    const trees = new Array(n);
+
+    for (let i = 0; i < n; i++) {
+        trees[i] = constructTree(points, k);
+    }
+
+    return trees;
+}
+
+export function searchAnnoyMany<DataType>(
+    target: Point<DataType>,
+    trees: AnnoyNode<DataType>[],
+    k: number = 5
+): Array<{ point: Point<DataType>; sim: number }> {
+    const results: Array<Point<DataType>> = [];
+
+    for (const tree of trees) {
+        results.push(...searchAnnoy(target, tree, k));
+    }
+
+    const seenIndex: {
+        [key: string]: boolean;
+    } = {};
+
+    return results
+        .map(x => ({ sim: calcSimilarity(target, x), point: x }))
+        .filter(p => {
+            if (seenIndex[p.point.data as string]) {
+                return false;
+            } else {
+                seenIndex[p.point.data as string] = true;
+                return true;
+            }
+        })
+        .sort((a, b) => b.sim - a.sim)
+        .slice(0, k);
+}
