@@ -8,10 +8,14 @@ Here are some benchmarks of the various algorithms implemented running on my com
 
 ### Benchmark on Small Dataset of 1000 Arxiv Titles
 
-| Algorithm      | Average Time Over 5 Runs | Average Similarity |
-| -------------- | ------------------------ | ------------------ |
-| KNN            | 2.4058ms                 | 0.7422             |
-| DiskANN/Vamana | 0.822ms                  | 0.6952             |
+| Algorithm                  | Average Time Over 5 Runs | Average Similarity |
+| -------------------------- | ------------------------ | ------------------ |
+| KNN                        | 2.4058ms                 | 0.7422             |
+| DiskANN/Vamana Full Random | 0.822ms                  | 0.6952             |
+| DiskANN/Vamana Optimized   | 0.184ms                  | 0.6141             |
+| Annoy                      | 0.294ms                  | 0.6208             |
+| Annoy Many                 | 0.792ms                  | 0.7027             |
+| Full Random Search         | 0.055ms                  | 0.5687             |
 
 ### Benchmark on Dataset of 10k Arxiv Titles
 
