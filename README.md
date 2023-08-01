@@ -19,10 +19,13 @@ Here are some benchmarks of the various algorithms implemented running on my com
 
 ### Benchmark on Dataset of 10k Arxiv Titles
 
-| Algorithm      | Average Time Over 5 Runs | Average Similarity |
-| -------------- | ------------------------ | ------------------ |
-| KNN            | 24.35                    | 0.78201            |
-| DiskANN/Vamana | 1.25                     | 0.68904            |
+| Algorithm                  | Average Time Over 5 Runs | Average Similarity |
+| -------------------------- | ------------------------ | ------------------ |
+| KNN                        | 24.35                    | 0.78201            |
+| DiskANN/Vamana Full Random | 1.25                     | 0.68904            |
+| DiskANN/Vamana Optimized   | 0.3922                   | 0.68241            |
+| Annoy                      | 0.2178                   | 0.62507            |
+| Annoy Many                 | 1.368                    | 0.71328            |
 
 Keep in mind the similarity scores for DiskANN are currently with a rather low amount of connections per node at 5 and no fancy graph optimizations yet.
 
