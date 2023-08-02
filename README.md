@@ -32,3 +32,67 @@ Keep in mind the similarity scores for DiskANN are currently with a rather low a
 Eventually I will have multiple algorithims, specifically Annoy, and HNSW, as well as comparisons to other popular libraries and projects. The goal is to become the fastest JavaScript/TypeScript based vector database.
 
 More benchmarks coming soon with recal metrics and larger datasets.
+
+## Pros and Cons of Different Algorithims
+
+### KNN
+
+Pros:
+
+-   100% accuracy
+-   Simple
+-   No Additional Indexing Step
+
+Cons:
+
+-   O(N) time complextiy meaning as dataset gets larger the time it takes to search scales linearly
+
+### DiskANN/Vamana with full random connections
+
+Pros:
+
+-   indexing step is pretty quick
+-   decent accuracy
+-   decent search time
+
+Cons:
+
+-   not particularly good in any metric
+
+### DiskANN/Vamana Optimized graph
+
+Pros:
+
+-   good search time
+-   decent accuracy
+
+Cons:
+
+-   Indexing step is incredibly slow, I can likely make this much faster but I am limited by my language a little bit
+
+### Annoy
+
+Pros:
+
+-   Really fast Indexing
+-   Really fast Search
+-   Pretty simple to understand
+
+Cons:
+
+-   Not that great accuracy
+-   need to get a bit luck with the indexing because you could have a tree that is really evenly spread out or you could have one that has one branch that is really deep.
+
+### Annoy Many
+
+Pros:
+
+-   Pretty easily tunable by just adjusting the number of trees you want to make
+-   Best ANN accuracy of my implementations
+-   still decent search time
+-   Good pretty fast indexing
+
+Cons:
+
+-   Memory usage as you have to store multiple trees in memory
+-   When you use many trees it can get a fair bit slower than other algorithims when searching
